@@ -1,0 +1,64 @@
+<link rel="stylesheet" href="bootstrap-4.4.1-dist/css/bootstrap.min.css">
+<div ng-app="student"
+    ng-controller="ctr"
+    class="container">
+    <div class="row">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <input class="bg-primary form-control" type="text" ng-model="search">
+        </div>
+    </div>
+    
+    <table class="table table-bordered
+        table-hover" >
+        <tr ng-repeat="student in students
+                | filter:search">
+            <td>{{ student.id }}</td>
+            <td>{{ student.lastname }}</td>
+            <td>{{ student.firstname }}</td>
+            <td>{{ student.address }}</td>
+        </tr>
+    </table>
+
+    <form name="addForm" ng-submit="add()">
+        <input type="text" name="lastname"
+            ng-model="lastname" required>
+            {{ lastname }}
+        <input type="text" name="firstname"
+            ng-model="firstname" required>
+            <input type="text" name="address"
+            ng-model="address" required>
+        <input type="submit"
+            ng-show="addForm.$valid">
+    </form>
+
+</div>
+
+<script src="js/angular.min.js"></script>
+<script>
+    var app = angular.module('student',[]);
+    app.controller('ctr',function($scope,$http){
+        $scope.get = function(){
+            $http
+                .get("php/get.php")
+                .then(function(res){
+                    console.log(res.data);
+                    $scope.students = res.data;
+                })
+
+        }
+
+        $scope.get();
+
+        $scope.add = function(){
+            $http
+                .post("php/add.php",{
+                    'lastname':$scope.lastname,
+                    'firstname':$scope.firstname,
+                    'address':$scope.address
+                }).then(function(res){
+                    $scope.get();
+                });
+        }
+        
+    });
+</script>
